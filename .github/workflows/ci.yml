@@ -69,14 +69,14 @@ jobs:
             lib_postfix: '/x86_64-linux-gnu'
             qt_version: 6
           - target: oracular-qt6.6
-            image_variant: oracular
+            image_variant: resolute
             lib_postfix: '/x86_64-linux-gnu'
             qt_version: 6
     env:
       HOME: /home/runner
     runs-on: ubuntu-22.04
     container:
-      image: ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:2025-01-05
+      image: ghcr.io/kiwix/kiwix-build_ci_${{matrix.image_variant}}:2026-02-15
 
     steps:
       - name: Install dependencies
