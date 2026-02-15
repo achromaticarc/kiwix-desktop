@@ -55,23 +55,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target:
-          - jammy-qt5
-          - noble-qt6.4
-          - oracular-qt6.6
-        include:
-          - target: jammy-qt5
-            image_variant: jammy
-            lib_postfix: '/x86_64-linux-gnu'
-            qt_version: 5
-          - target: noble-qt6.4
-            image_variant: noble
-            lib_postfix: '/x86_64-linux-gnu'
-            qt_version: 6
-          - target: oracular-qt6.6
-            image_variant: resolute
-            lib_postfix: '/x86_64-linux-gnu'
-            qt_version: 6
+        image_variant: [noble, resolute]
     env:
       HOME: /home/runner
     runs-on: ubuntu-22.04
@@ -90,9 +74,7 @@ jobs:
       - name: Compile source code
         shell: bash
         env:
-          PKG_CONFIG_PATH: "/home/runner/BUILD_linux-x86_64/INSTALL/lib/pkgconfig:/home/runner/BUILD_linux-x86_64/INSTALL/lib${{matrix.lib_postfix}}/pkgconfig"
+          PKG_CONFIG_PATH: "/home/runner/BUILD_linux-x86_64/INSTALL/lib/pkgconfig:/home/runner/BUILD_linux-x86_64/INSTALL/lib/x86_64-linux-gnu/pkgconfig"
         run: |
-          export QT_SELECT=qt${{matrix.qt_version}}
-          qmake --version
           qmake PREFIX=$HOME/BUILD_linux-x86_64/INSTALL
           make
