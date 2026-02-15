@@ -16,12 +16,12 @@ jobs:
     runs-on: windows-2025
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
-    - name: Setup python 3.13
-      uses: actions/setup-python@v5
+    - name: Setup python 3.14
+      uses: actions/setup-python@v6
       with:
-        python-version: '3.13'
+        python-version: '3.14'
 
     - name: Install packages
       run: |
@@ -69,7 +69,7 @@ jobs:
           target_platform: linux-x86_64-dyn
 
       - name: Retrieve source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Compile source code
         shell: bash
