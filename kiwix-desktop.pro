@@ -4,6 +4,8 @@
 #
 #-------------------------------------------------
 
+lessThan(QT_MAJOR_VERSION, 6): error("Qt6 is required")
+
 QT       += core gui network
 QT       += webenginewidgets webchannel
 QT       += printsupport
@@ -24,7 +26,7 @@ TARGET = kiwix-desktop
 TEMPLATE = app
 
 QMAKE_CXXFLAGS += -std=c++17
-QMAKE_LFLAGS +=  -std=c++17
+QMAKE_LFLAGS += -std=c++17
 
 !win32 {
     QMAKE_CXXFLAGS += -Werror
