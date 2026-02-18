@@ -16,12 +16,12 @@ jobs:
     runs-on: windows-2025
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
-    - name: Setup python 3.13
-      uses: actions/setup-python@v5
+    - name: Setup python 3.14
+      uses: actions/setup-python@v6
       with:
-        python-version: '3.13'
+        python-version: '3.14'
 
     - name: Install packages
       run: |
@@ -30,8 +30,8 @@ jobs:
     - name: Install QT
       uses: jurplel/install-qt-action@v4
       with:
-        version: 5.15.2
-        modules: "qtwebengine"
+        version: 6.8.3
+        modules: "qtwebengine qtwebchannel qtpositioning"
         setup-python: false
 
     - name: Setup MSVC compiler
@@ -48,6 +48,7 @@ jobs:
       shell: cmd
       run: |
         set PKG_CONFIG_PATH=%cd%\BUILD_win-amd64\INSTALL\lib\pkgconfig
+        qmake --version
         qmake PREFIX=%cd%\BUILD_win-amd64\INSTALL
         nmake release-all
 
@@ -55,23 +56,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target:
-          - jammy-qt5
-          - noble-qt6.4
-          - oracular-qt6.6
-        include:
-          - target: jammy-qt5
-            image_variant: jammy
-            lib_postfix: '/x86_64-linux-gnu'
-            qt_version: 5
-          - target: noble-qt6.4
-            image_variant: noble
-            lib_postfix: '/x86_64-linux-gnu'
-            qt_version: 6
-          - target: oracular-qt6.6
-            image_variant: resolute
-            lib_postfix: '/x86_64-linux-gnu'
-            qt_version: 6
+        image_variant: [noble, resolute]
     env:
       HOME: /home/runner
     runs-on: ubuntu-22.04
@@ -85,14 +70,13 @@ jobs:
           target_platform: linux-x86_64-dyn
 
       - name: Retrieve source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Compile source code
         shell: bash
         env:
-          PKG_CONFIG_PATH: "/home/runner/BUILD_linux-x86_64/INSTALL/lib/pkgconfig:/home/runner/BUILD_linux-x86_64/INSTALL/lib${{matrix.lib_postfix}}/pkgconfig"
+          PKG_CONFIG_PATH: "/home/runner/BUILD_linux-x86_64/INSTALL/lib/pkgconfig:/home/runner/BUILD_linux-x86_64/INSTALL/lib/x86_64-linux-gnu/pkgconfig"
         run: |
-          export QT_SELECT=qt${{matrix.qt_version}}
           qmake --version
           qmake PREFIX=$HOME/BUILD_linux-x86_64/INSTALL
           make

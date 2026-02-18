@@ -29,7 +29,7 @@ The following libraries need to be available:
 
 * [libzim](https://github.com/openzim/libzim/)
 * [libkiwix](https://github.com/kiwix/libkiwix/)
-* [Qt](https://www.qt.io/)
+* [Qt6](https://www.qt.io/)
 * [aria2](https://aria2.github.io/)
 
 These dependencies may or may not be packaged by your operating
@@ -41,13 +41,11 @@ version by hand.
 Libkiwix has to be compiled dynamically, the best way to have it is
 to use [kiwix-build](https://github.com/kiwix/kiwix-build).
 
-Install needed packages (on Ubuntu 18.04+):
+Install needed packages (on Ubuntu 24.04+):
 
 ```bash
-sudo apt-get install libqt5gui5 qtbase5-dev qtwebengine5-dev \
-     libqt5svg5-dev qt5-image-formats-plugins aria2 \
-     qttools5-dev-tools qtchooser qt5-qmake \
-     qtbase5-dev-tools
+sudo apt install qt6-base-dev qt6-base-dev-tools qt6-webengine-dev
+     libqt6webenginecore6-bin libqt6svg6
 ```
 
 Compilation
@@ -73,16 +71,11 @@ You may want to simply open the kiwix-desktop project in QtCreator and
 then compile the project from there (don't forget to update
 `PKG_CONFIG_PATH` if necessary).
 
-Compilation with Qt6
---------------------
+Handling of multiple versions of Qt
+-----------------------------------
 
-There is initial support for Qt6. Additional packages are needed:
-
-```bash
-sudo apt install qt6-base-dev qt6-base-dev-tools qt6-webengine-dev libqt6webenginecore6-bin libqt6svg6
-```
-
-And `qmake` needs to be configured to use Qt6. First confirm `qmake` is using the right version:
+If you have many versions of Qt (like older Qt5 for example) installed
+on your system, `qmake` might need to be configured to use Qt6.
 
 ```bash
 qtchooser -install qt6 $(which qmake6)   # run once
@@ -90,28 +83,21 @@ export QT_SELECT=qt6                     # set in environments where Qt6 builds 
 qmake --version
 ```
 
-produces this output:
+These command will produce an output similar to:
 
 ```bash
-$ qmake --version
+qmake --version
 QMake version 3.1
 Using Qt version 6.2.4 in /usr/lib/aarch64-linux-gnu
-```
-
-then build as normal:
-
-```bash
-qmake .
-make
 ```
 
 Handling of 'template-id' related compilation errors
 ----------------------------------------------------
 
-Many minor versions of Qt, for both Qt5 and Qt6, have difficulties to
-compile because of 'template-id' related syntax errors. If your
-compiler (`g++`) supports it, you can get rid of these errors by
-telling the compiler to ignore them with the following command:
+Many minor versions of Qt6, have difficulties to compile because of
+'template-id' related syntax errors. If your compiler (`g++`) supports
+it, you can get rid of these errors by telling the compiler to ignore
+them with the following command:
 
 ```bash
 qmake QMAKE_CXXFLAGS="-Wno-error=template-id-cdtor" .
@@ -161,7 +147,7 @@ LD_LIBRARY_PATH="<...>/BUILD_native_dyn/INSTALL/lib/x86_64-linux-gnu"
 Debug rendering of a ZIM
 ------------------------
 
-`kiwix-desktop` uses [Qt
+`kiwix-desktop` uses [Qt6
 WebEngine](https://doc.qt.io/qt-6/qtwebengine-overview.html) to render
 ZIM content, relying on a custom `zim:` protocol to expose the ZIM
 data to the Web engine.
