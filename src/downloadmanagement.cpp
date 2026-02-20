@@ -485,5 +485,10 @@ void DownloadManager::cancelDownload(const QString& bookId)
 
 void DownloadManager::removeDownload(QString bookId)
 {
+    const auto ds = getDownloadState(bookId);
+    const auto th = ds->torrentHandle;
+    if ( th.is_valid() ) {
+        m_libtorrentSession.remove_torrent(th);
+    }
     m_downloads.remove(bookId);
 }
