@@ -3,6 +3,8 @@
 #include "kiwixapp.h"
 #include "kiwixmessagebox.h"
 
+#include <libtorrent/magnet_uri.hpp>
+
 #include <QStorageInfo>
 #include <QThread>
 
@@ -12,6 +14,13 @@
 
 namespace
 {
+
+std::string toHexString(lt::sha1_hash const& s)
+{
+	std::stringstream ret;
+	ret << s;
+	return ret.str();
+}
 
 QString convertToUnits(double bytes)
 {
@@ -208,6 +217,23 @@ void DownloadManager::updateDownload(QString bookId)
 namespace
 {
 
+QString torrentStatus2QString(lt::torrent_status::state_t status)
+{
+    switch(status){
+    case lt::torrent_status::checking_files:
+    case lt::torrent_status::downloading_metadata:
+    case lt::torrent_status::downloading:
+        return "active";
+
+    case lt::torrent_status::finished:
+    case lt::torrent_status::seeding:
+        return "completed";
+
+    default:
+        return "unknown";
+    }
+}
+
 QString downloadStatus2QString(kiwix::Download::StatusResult status)
 {
     switch(status){
@@ -225,6 +251,20 @@ QString downloadStatus2QString(kiwix::Download::StatusResult status)
 
 DownloadInfo DownloadManager::getDownloadInfo(QString bookId) const
 {
+    const auto ds = getDownloadState(bookId);
+    const auto th = ds->torrentHandle;
+    if ( th.is_valid() ) {
+        const auto st = th.status(th.query_save_path|th.query_name);
+        const auto filePath = st.save_path + "/" + st.name;
+        return {
+                 { "status"          , torrentStatus2QString(st.state)   },
+                 { "completedLength" , QString::number(st.total_done) },
+                 { "totalLength"     , QString::number(st.total)     },
+                 { "downloadSpeed"   , QString::number(st.download_rate)   },
+                 { "path"            , QString::fromStdString(filePath)     }
+        };
+    }
+
     auto& b = mp_library->getBookById(bookId);
     const auto d = mp_downloader->getDownload(b.getDownloadId());
     d->updateStatus(true);
@@ -307,8 +347,28 @@ void DownloadManager::checkThatBookCanBeDownloaded(const kiwix::Book& book, cons
     checkThatBookCanBeSaved(book, downloadDirPath);
 }
 
+std::string DownloadManager::startTorrentDownload(const kiwix::Book& book, const std::string& downloadDirPath)
+{
+    const std::string& url = book.getUrl();
+    std::cerr << "Trying to start download using libtorrent: " << book.getUrl() << std::endl;
+    const QString bookId = QString::fromStdString(book.getId());
+    lt::add_torrent_params params = lt::parse_magnet_uri(url);
+    params.save_path = downloadDirPath;
+    const auto downloadState = getDownloadState(bookId);
+    downloadState->torrentHandle = m_libtorrentSession.add_torrent(params);
+    const auto torrentHash = toHexString(params.info_hashes.get_best());
+    std::cerr << "Now downloading using libtorrent: " << book.getUrl() << std::endl;
+    return "libtorrent:" + torrentHash;
+}
+
 std::string DownloadManager::startDownload(const kiwix::Book& book, const QString& downloadDirPath)
 {
+    try {
+        return startTorrentDownload(book, downloadDirPath.toStdString());
+    } catch ( ... ) {
+        std::cerr << "Failed to start download using libtorrent: " << book.getUrl() << std::endl;
+    }
+
     const std::string& url = book.getUrl();
     const QString bookId = QString::fromStdString(book.getId());
 
@@ -339,6 +399,13 @@ void DownloadManager::addRequest(Action action, QString bookId)
 
 void DownloadManager::pauseDownload(const QString& bookId)
 {
+    const auto ds = getDownloadState(bookId);
+    const auto th = ds->torrentHandle;
+    if ( th.is_valid() ) {
+        // TODO: not yet implemented
+        return;
+    }
+
     const auto downloadId = mp_library->getBookById(bookId).getDownloadId();
     if ( downloadId.empty() ) {
         // Completion of the download has been detected (and its id was reset)
@@ -365,6 +432,13 @@ void DownloadManager::pauseDownload(const QString& bookId)
 
 void DownloadManager::resumeDownload(const QString& bookId)
 {
+    const auto ds = getDownloadState(bookId);
+    const auto th = ds->torrentHandle;
+    if ( th.is_valid() ) {
+        // TODO: not yet implemented
+        return;
+    }
+
     auto& b = mp_library->getBookById(bookId);
     auto download = mp_downloader->getDownload(b.getDownloadId());
     if (download->getStatus() == kiwix::Download::K_PAUSED) {
@@ -374,6 +448,13 @@ void DownloadManager::resumeDownload(const QString& bookId)
 
 void DownloadManager::cancelDownload(const QString& bookId)
 {
+    const auto ds = getDownloadState(bookId);
+    const auto th = ds->torrentHandle;
+    if ( th.is_valid() ) {
+        // TODO: not yet implemented
+        return;
+    }
+
     const auto downloadId = mp_library->getBookById(bookId).getDownloadId();
     if ( downloadId.empty() ) {
         // Completion of the download has been detected (and its id was reset)
