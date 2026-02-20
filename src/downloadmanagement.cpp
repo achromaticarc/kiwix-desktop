@@ -217,9 +217,13 @@ void DownloadManager::updateDownload(QString bookId)
 namespace
 {
 
-QString torrentStatus2QString(lt::torrent_status::state_t status)
+QString torrentStatus2QString(const lt::torrent_status& status)
 {
-    switch(status){
+    if ( status.flags & lt::torrent_flags::paused ) {
+        return "paused";
+    }
+
+    switch(status.state){
     case lt::torrent_status::checking_files:
     case lt::torrent_status::downloading_metadata:
     case lt::torrent_status::downloading:
@@ -257,7 +261,7 @@ DownloadInfo DownloadManager::getDownloadInfo(QString bookId) const
         const auto st = th.status(th.query_save_path|th.query_name);
         const auto filePath = st.save_path + "/" + st.name;
         return {
-                 { "status"          , torrentStatus2QString(st.state)   },
+                 { "status"          , torrentStatus2QString(st)   },
                  { "completedLength" , QString::number(st.total_done) },
                  { "totalLength"     , QString::number(st.total)     },
                  { "downloadSpeed"   , QString::number(st.download_rate)   },
@@ -402,7 +406,8 @@ void DownloadManager::pauseDownload(const QString& bookId)
     const auto ds = getDownloadState(bookId);
     const auto th = ds->torrentHandle;
     if ( th.is_valid() ) {
-        // TODO: not yet implemented
+        th.unset_flags(lt::torrent_flags::auto_managed);
+        th.pause();
         return;
     }
 
@@ -435,7 +440,7 @@ void DownloadManager::resumeDownload(const QString& bookId)
     const auto ds = getDownloadState(bookId);
     const auto th = ds->torrentHandle;
     if ( th.is_valid() ) {
-        // TODO: not yet implemented
+        th.resume();
         return;
     }
 
