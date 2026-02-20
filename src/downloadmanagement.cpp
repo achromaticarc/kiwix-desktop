@@ -456,7 +456,8 @@ void DownloadManager::cancelDownload(const QString& bookId)
     const auto ds = getDownloadState(bookId);
     const auto th = ds->torrentHandle;
     if ( th.is_valid() ) {
-        // TODO: not yet implemented
+        m_libtorrentSession.remove_torrent(th);
+        emit downloadCancelled(bookId);
         return;
     }
 
