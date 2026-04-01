@@ -34,14 +34,6 @@ bool wasAppStartedFromARemoteDrive()
 
 int main(int argc, char *argv[])
 {
-// Small hack to make QtWebEngine works with AppImage.
-// See https://github.com/probonopd/linuxdeployqt/issues/554
-    if (qEnvironmentVariableIsSet("APPIMAGE")) {
-        qputenv("QTWEBENGINE_CHROMIUM_FLAGS", "--disable-gpu --no-sandbox");
-        QApplication::setAttribute(Qt::AA_UseOpenGLES);
-    }
-// End of hack ^^^
-
 #ifdef Q_OS_WIN
     const bool appWasStartedFromARemoteDrive = wasAppStartedFromARemoteDrive();
     if ( appWasStartedFromARemoteDrive ) {
