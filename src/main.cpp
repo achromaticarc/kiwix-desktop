@@ -50,6 +50,15 @@ int main(int argc, char *argv[])
 #endif
 #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     QWebEngineUrlScheme scheme("zim");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    // Needed so the Fetch API / XHR can load zim:// resources (issue #1476).
+    // FetchApiAllowed was introduced in Qt 6.6.
+    scheme.setSyntax(QWebEngineUrlScheme::Syntax::Host);
+    scheme.setFlags(QWebEngineUrlScheme::SecureScheme
+                  | QWebEngineUrlScheme::LocalAccessAllowed
+                  | QWebEngineUrlScheme::CorsEnabled
+                  | QWebEngineUrlScheme::FetchApiAllowed);
+#endif
     QWebEngineUrlScheme::registerScheme(scheme);
 #endif
     KiwixApp a(argc, argv);
