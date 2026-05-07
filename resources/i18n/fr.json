@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Benoit74",
+			"Chpol",
 			"Constant",
 			"Florian COLLIN",
 			"Gomoko",
@@ -129,6 +130,7 @@
 	"ok": "ok",
 	"no-filter": "aucun filtre",
 	"open-link-in-web-browser": "Ouvrir le lien dans votre navigateur web",
+	"copy-link": "Copier le lien",
 	"open-link-new-tab": "Ouvrir le lien dans un nouvel onglet",
 	"download-dir-dialog-title": "Voulez-vous vraiment modifier le répertoire de téléchargement ?",
 	"download-dir-dialog-msg": "Le nouveau chemin du répertoire de téléchargement sera :\n{{DIRECTORY}}",
