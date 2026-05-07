@@ -9,6 +9,11 @@
 #include <QVariant>
 #include <QWaitCondition>
 
+#if defined(ENABLE_LIBTORRENT)
+#include <libtorrent/torrent_handle.hpp>
+#include <libtorrent/session.hpp>
+#endif
+
 #include <chrono>
 #include <memory>
 #include <queue>
@@ -77,6 +82,9 @@ public: // types
 
 public: // data
 
+#if defined(ENABLE_LIBTORRENT)
+    lt::torrent_handle torrentHandle;
+#endif
     double progress = 0;
     QString completedLength;
 
@@ -197,6 +205,9 @@ private: // functions
     void resumeDownload(const QString& bookId);
     void updateDownload(QString bookId);
     void cancelDownload(const QString& bookId);
+#if defined(ENABLE_LIBTORRENT)
+    std::string startTorrentDownload(const kiwix::Book& book, const std::string& downloadDirPath);
+#endif
 
 private: // data
     const Library* const     mp_library;
@@ -204,6 +215,9 @@ private: // data
     Downloads                m_downloads;
     QThread*                 mp_downloadUpdaterThread = nullptr;
     RequestQueue             m_requestQueue;
+#if defined(ENABLE_LIBTORRENT)
+    lt::session              m_libtorrentSession;
+#endif
 };
 
 #endif // DOWNLOADMANAGEMENT_H

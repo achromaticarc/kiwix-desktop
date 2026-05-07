@@ -246,6 +246,8 @@ QMAKE_CFLAGS += $$PKGCONFIG_CFLAGS
 
 !win32 {
    LIBS += $$system(pkg-config --libs $$PKGCONFIG_OPTION $$DEPS_DEFINITION)
+   LIBS += -ltorrent-rasterbar
+   QMAKE_CXXFLAGS += -DENABLE_LIBTORRENT
 }
 
 win32 {
