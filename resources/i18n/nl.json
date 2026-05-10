@@ -178,7 +178,7 @@
 	"export-reading-list-error": "Er is een fout opgetreden tijdens het exporteren van de leeslijst.",
 	"import-reading-list": "Leeslijst importeren",
 	"import-reading-list-error": "Er is een fout opgetreden tijdens het importeren van de leeslijst.",
-	"disable-sandbox": "Kiwix is gestart vanaf een netwerkstation. Dit gaat niet samen met de veiligheidsafzondering (sandbox) van de browser. Daarom wordt de sandbox uitgeschakeld. Wilt u doorgaan?",
+	"disable-sandbox": "Kiwix is gestart vanaf een netwerkstation. Dit gaat niet samen met de veiligheidsafzondering (kladblok) van de browser. Daarom wordt het kladblok uitgeschakeld. Wilt u doorgaan?",
 	"save-page-as": "Opslaan als…",
 	"portable-disabled-tooltip": "Functie uitgeschakeld in draagbare modus",
 	"scroll-next-tab": "Naar het volgende tabblad scrollen",

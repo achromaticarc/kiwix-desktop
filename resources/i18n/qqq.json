@@ -78,7 +78,6 @@
 	"resume": "\"Resume\" here refers to continuing a task.",
 	"pause": "{{identical|Pause}}",
 	"cancel": "{{identical|Cancel}}",
-	"apply": "{{identical|apply}}",
 	"port-for-local-kiwix-server-setting": "Refers to the network port number on which the local Kiwix server will run.",
 	"zoom-level-setting": "Describes the default zoom level of articles displayed on this desktop application.",
 	"download-directory-setting": "Describes the directory in the file system where ZIM files will be downloaded to.",
