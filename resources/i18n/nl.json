@@ -126,7 +126,7 @@
 	"download-dir-dialog-title": "Weet u zeker dat u de downloaddirectory wilt wijzigen?",
 	"download-dir-dialog-msg": "Het pad naar de nieuwe downloaddirectory wordt:\n{{DIRECTORY}}",
 	"invalid-port": "Ongeldige poort",
-	"zim-open-fail-title": "Ongeldig bestand",
+	"zim-open-fail-title": "Onjuist bestand",
 	"zim-open-fail-text": "Het ZIM-bestand <b>{{ZIM}}</b> kan niet correct worden geopend. Het wordt uit uw bibliotheek verwijderd.",
 	"monitor-dir-dialog-title": "Weet u zeker dat u de te volgen directory wilt wijzigen?",
 	"monitor-dir-dialog-msg": "Het pad naar de nieuwe te volgen directory wordt:\n{{DIRECTORY}}",
