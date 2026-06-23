@@ -208,6 +208,7 @@ private: // functions
 #if defined(ENABLE_LIBTORRENT)
     std::string startTorrentDownload(const kiwix::Book& book, const std::string& downloadDirPath);
 #endif
+    std::shared_ptr<DownloadState> restoreDownload(const kiwix::Book& b);
 
 private: // data
     const Library* const     mp_library;

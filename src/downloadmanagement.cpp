@@ -18,12 +18,26 @@ namespace
 {
 
 #if defined(ENABLE_LIBTORRENT)
+const std::string LTPREFIX = "libtorrent:";
+
 std::string toHexString(lt::sha1_hash const& s)
 {
 	std::stringstream ret;
 	ret << s;
 	return ret.str();
 }
+
+bool isLibtorrentDownloadId(const std::string& downloadId)
+{
+    return downloadId.substr(0, LTPREFIX.size()) == LTPREFIX;
+}
+
+std::string getDirPath(const std::string& path)
+{
+    QFileInfo f(QString::fromStdString(path));
+    return f.absoluteDir().path().toStdString();
+}
+
 #endif
 
 QString convertToUnits(double bytes)
@@ -192,12 +206,31 @@ void DownloadManager::startDownloadUpdaterThread()
     timer->start(1000);
 }
 
+std::shared_ptr<DownloadState> DownloadManager::restoreDownload(const kiwix::Book& b)
+{
+    const auto d = std::make_shared<DownloadState>();
+
+#ifdef ENABLE_LIBTORRENT
+    if ( isLibtorrentDownloadId(b.getDownloadId()) ) {
+        lt::add_torrent_params p = lt::parse_magnet_uri(b.getUrl());
+        p.save_path = getDirPath(b.getPath());
+        const auto th = m_libtorrentSession.add_torrent(p);
+        th.force_recheck();
+        th.unset_flags(lt::torrent_flags::auto_managed);
+        th.pause();
+        d->torrentHandle = th;
+    }
+#endif
+
+    return d;
+}
+
 void DownloadManager::restoreDownloads()
 {
     for ( const auto& bookId : mp_library->getBookIds() ) {
         const kiwix::Book& book = mp_library->getBookById(bookId);
         if ( ! book.getDownloadId().empty() ) {
-            const auto newDownload = std::make_shared<DownloadState>();
+            const auto newDownload = restoreDownload(book);
             m_downloads.set(bookId, newDownload);
         }
     }
@@ -371,7 +404,7 @@ std::string DownloadManager::startTorrentDownload(const kiwix::Book& book, const
     downloadState->torrentHandle = m_libtorrentSession.add_torrent(params);
     const auto torrentHash = toHexString(params.info_hashes.get_best());
     std::cerr << "Now downloading using libtorrent: " << book.getUrl() << std::endl;
-    return "libtorrent:" + torrentHash;
+    return LTPREFIX + torrentHash;
 }
 #endif
 
